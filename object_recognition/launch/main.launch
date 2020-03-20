@@ -1,0 +1,18 @@
+<launch>
+  <arg name="object" default="can"/>
+  <arg name="no_view" default="false"/>
+
+  <include file="$(find robotic_arm)/launch/launch_robotic_arm_simulation.launch" >
+	<arg name="object" value="$(arg object)"/>
+  </include>
+
+  <include file="$(find robotic_arm_moveit_config)/launch/robotic_arm_planning_execution.launch">
+  </include>
+
+  <node   name="object_recognition_start"
+        pkg="object_recognition"
+        type="object_rec_start.py"
+        args=""
+        output="screen"/>
+
+</launch>
