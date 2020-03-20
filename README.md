@@ -1,4 +1,3 @@
-[TOC]
 # Pick and place robotic arm project
 
 ## Introdution
@@ -24,7 +23,7 @@ To start this project run the following command to download Docker image.
         semantek/robotic_arm
 
 ### Start next time
-Do not use "run" next time, but use "start" command. To do this, follow the next steps.
+Do not use "**run**" next time, but use "**start**" command. To do this, follow the next steps.
 To make access from container to graphical tools run the following command on your host:
 
     xhost +local:root
@@ -42,14 +41,26 @@ And come in the container
 
 To start simulation with recognition of the objects on the table run next command in container:
 
-Default objects on the table are randomly placed void coke cans. To change objects to the balls use the argument  "ball".
-If you don't need a camera view window, use the argument  "no_view".
+Default objects on the table are randomly placed void coke cans. To change objects to the balls use the argument  "**ball**".
 
-The process of object recognition published number and places in the "recognized_object_array" topic.
+    roslaunch object_recognition main.launch object := ball
+
+
+
+If you don't need a camera view window, use the argument  "**no_view**".
+
+    roslaunch object_recognition main.launch no_view:=true
+
+
+Camera in the simulation have "*in_static*" property, so you can move it in place as you like. 
+
+The process of object recognition published number and places in the "**recognized_object_array**" topic.
 
 ## Start pick and place
 
 To start pick and place run next command
 
+    roslaunch roboarn_pap pap.launch
+
 Robotic arm mast starts moving, grasping objects on the table and throw them to the bin one-by-one. Between loops arm will be stand in a neutral position.
-If all will be OK, process shut down with "No objects" message.
+If all will be OK, process shut down with "**No objects**" message.
