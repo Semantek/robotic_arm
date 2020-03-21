@@ -17,8 +17,11 @@ RUN apt-get update && \
 
     cd /opt/ros/melodic/share/my_workspace/ && \
     source /opt/ros/melodic/setup.bash && \
-
     echo 'source /opt/ros/melodic/setup.bash' >> ~/.bashrc
+
+RUN cd /opt/ros/melodic/share/my_workspace && \
+    catkin init
+    
 
 # Create project foulders
 
@@ -34,8 +37,6 @@ COPY object_recognition /opt/ros/melodic/share/my_workspace/scr
 
 COPY roboarm_pap /opt/ros/melodic/share/my_workspace/scr
 
-RUN cd /opt/ros/melodic/share/my_workspace && \
-    catkin init
 RUN cd /opt/ros/melodic/share/my_workspace/ && \
     catkin build && \
     echo "source /opt/ros/melodic/share/my_workspace/devel/setup.bash" >> ~/.bashrc
