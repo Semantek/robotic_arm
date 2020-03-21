@@ -28,11 +28,11 @@ RUN cd /opt/ros/melodic/share/ && \
 
 #RUN cd /opt/ros/melodic/share/my_workspace/scr
 
-COPY robotic_arm_moveit_config /opt/ros/melodic/share/my_workspace/scr
+COPY ./robotic_arm_moveit_config /opt/ros/melodic/share/my_workspace/scr
 
-COPY object_recognition /opt/ros/melodic/share/my_workspace/scr
+COPY ./object_recognition /opt/ros/melodic/share/my_workspace/scr
 
-COPY roboarm_pap /opt/ros/melodic/share/my_workspace/scr
+COPY ./roboarm_pap /opt/ros/melodic/share/my_workspace/scr
 
 RUN cd /opt/ros/melodic/share/my_workspace/scr && \
     catkin init
@@ -48,8 +48,8 @@ RUN cd /opt/ros/melodic/share/simulations/ && \
 
     git clone https://github.com/ros-industrial/universal_robot.git
 
-COPY robotic_arm /opt/ros/melodic/share/simulations/
-COPY robotic_arm_gazebo /opt/ros/melodic/share/simulations/
+COPY ./robotic_arm /opt/ros/melodic/share/simulations/
+COPY ./robotic_arm_gazebo /opt/ros/melodic/share/simulations/
 
 
 
