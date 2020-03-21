@@ -12,12 +12,12 @@ RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y ros-melodic-catkin python-catkin-tools ros-melodic-moveit wget
 
-RUN apt-get update && \
-    source /opt/ros/melodic/setup.bash && \
-    echo 'source /opt/ros/melodic/setup.bash' >> ~/.bashrc
+#RUN apt-get update && \
+   # echo 'source /opt/ros/melodic/setup.bash' >> ~/.bashrc
     
 RUN mkdir -p /opt/ros/melodic/share/my_workspace/scr
 RUN cd /opt/ros/melodic/share/my_workspace && \
+    source /opt/ros/melodic/setup.bash && \
     catkin init
 
 # Create project foulders
