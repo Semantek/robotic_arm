@@ -30,11 +30,11 @@ RUN cd /opt/ros/melodic/share/ && \
 
 #RUN cd /opt/ros/melodic/share/my_workspace/scr
 
-COPY robotic_arm_moveit_config /opt/ros/melodic/share/my_workspace/scr
+COPY robotic_arm_moveit_config /opt/ros/melodic/share/my_workspace/scr/
 
-COPY object_recognition /opt/ros/melodic/share/my_workspace/scr
+COPY object_recognition /opt/ros/melodic/share/my_workspace/scr/
 
-COPY roboarm_pap /opt/ros/melodic/share/my_workspace/scr
+COPY roboarm_pap /opt/ros/melodic/share/my_workspace/scr/
 
 #RUN cd /opt/ros/melodic/share/my_workspace/ && \
     #catkin build && \
