@@ -25,7 +25,6 @@ RUN cd /opt/ros/melodic/share/my_workspace/src && \
 # Create project foulders
 
 RUN cd /opt/ros/melodic/share/ && \
-
     mkdir simulations 
 
 #RUN cd /opt/ros/melodic/share/my_workspace/scr
@@ -45,7 +44,6 @@ RUN cd /opt/ros/melodic/share/my_workspace/ && \
 # Clone robot model and coty sim files
 
 RUN cd /opt/ros/melodic/share/simulations/ && \
-
     git clone https://github.com/ros-industrial/universal_robot.git
 
 COPY robotic_arm /opt/ros/melodic/share/simulations/
