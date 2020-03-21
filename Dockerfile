@@ -36,11 +36,9 @@ COPY object_recognition /opt/ros/melodic/share/my_workspace/scr
 
 COPY roboarm_pap /opt/ros/melodic/share/my_workspace/scr
 
-RUN cd /opt/ros/melodic/share/my_workspace/ && \
-    catkin build && \
-    echo "source /opt/ros/melodic/share/my_workspace/devel/setup.bash" >> ~/.bashrc
-
-
+#RUN cd /opt/ros/melodic/share/my_workspace/ && \
+    #catkin build && \
+    #echo "source /opt/ros/melodic/share/my_workspace/devel/setup.bash" >> ~/.bashrc
 
 # Clone robot model and coty sim files
 
