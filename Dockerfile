@@ -34,7 +34,7 @@ COPY object_recognition /opt/ros/melodic/share/my_workspace/scr
 
 COPY roboarm_pap /opt/ros/melodic/share/my_workspace/scr
 
-RUN cd /opt/ros/melodic/share/my_workspace/scr && \
+RUN cd /opt/ros/melodic/share/my_workspace && \
     catkin init
 RUN cd /opt/ros/melodic/share/my_workspace/ && \
     catkin build && \
