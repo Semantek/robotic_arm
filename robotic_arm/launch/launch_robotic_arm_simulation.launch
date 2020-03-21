@@ -1,0 +1,38 @@
+<launch>
+  <arg name="gui" default="true"/>
+  <arg name="start_gazebo" default="true"/>
+  <arg name="limited" default="false"/>
+  <arg name="paused" default="false"/>
+  <arg name="verbose" default="false"/>
+  <arg name="object" default="can"/>
+
+  <group if="$(arg start_gazebo)">
+    <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+      <arg name="world_name" value="$(find robotic_arm)/world/robotic_arm_$(arg object).world"/>
+      <arg name="paused" value="$(arg paused)"/>
+      <arg name="gui" value="$(arg gui)"/>
+      <arg name="verbose" value="$(arg verbose)"/>
+      <arg name="physics" value="ode"/>
+      <env name="GAZEBO_MODEL_PATH" value="~/.gazebo/models:/simulation/robotic_arm_gazebo/models:/simulation/robotic_arm_gazebo/universal_robot:${GAZEBO_MODEL_PATH}"/>
+    </include>
+  </group>
+
+  <param name="robot_description" command="$(find xacro)/xacro '$(find robotic_arm)/model.urdf'" />
+
+
+  <node name="spawn_gazebo_model" pkg="gazebo_ros" type="spawn_model"
+     args="-urdf -param robot_description -model robotic_arm" respawn="false" output="screen" />
+
+
+  <node name="world_to_arm_base" pkg="tf" type="static_transform_publisher" args="0 -1 1 0 0 0 world base_link 100" />
+  <include file="$(find ur_gazebo)/launch/controller_utils.launch"/>
+
+  <rosparam file="$(find ur_gazebo)/controller/arm_controller_ur10.yaml" command="load"/>
+  <param name="arm_controller/allow_partial_joints_goal" value="true"/>
+  <node name="arm_controller_spawner" pkg="controller_manager" type="controller_manager" args="spawn arm_controller" respawn="false" output="screen"/>
+
+  <rosparam command="load" file="$(find robotic_arm)/config/hand_H_gazebo_trajectory.yaml"/>
+  <node name="spawn_hand_controller" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="--shutdown-timeout=1.0 --timeout=360.0 hand_controller" />
+
+</launch>
