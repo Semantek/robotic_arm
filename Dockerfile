@@ -34,6 +34,7 @@ COPY object_recognition /opt/ros/melodic/share/my_workspace/scr/
 COPY roboarm_pap /opt/ros/melodic/share/my_workspace/scr/
 
 RUN cd /opt/ros/melodic/share/my_workspace/ && \
+    source /opt/ros/melodic/setup.bash && \
     catkin build && \
     echo "source /opt/ros/melodic/share/my_workspace/devel/setup.bash" >> ~/.bashrc
 
@@ -44,8 +45,6 @@ RUN cd /opt/ros/melodic/share/simulations/ && \
 
 COPY robotic_arm /opt/ros/melodic/share/simulations/
 COPY robotic_arm_gazebo /opt/ros/melodic/share/simulations/
-
-
 
 # Install libraries to use Gazebo camera in ROS 
 RUN apt-get install  -y ros-melodic-ros-control ros-melodic-ros-controllers
