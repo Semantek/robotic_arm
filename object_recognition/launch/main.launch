@@ -6,9 +6,6 @@
 	<arg name="object" value="$(arg object)"/>
   </include>
 
-  <include file="$(find robotic_arm_moveit_config)/launch/robotic_arm_planning_execution.launch">
-  </include>
-
   <node   name="object_recognition_start"
         pkg="object_recognition"
         type="object_rec_start.py"
