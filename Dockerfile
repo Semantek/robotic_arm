@@ -36,16 +36,16 @@ COPY ./robotic_arm_moveit_config /catkin_ws/src/robotic_arm_moveit_config
 COPY ./object_recognition /catkin_ws/src/object_recognition
 COPY ./roboarm_pap /catkin_ws/src/roboarm_pap
 
-RUN cd ~/catkin_ws && \
-    source /opt/ros/melodic/setup.bash && \
-    catkin build && \
-    echo 'source /catkin_ws/devel/setup.bash' >> /.bashrc
-    
 RUN cd ~/catkin_ws/src/object_recognition/src && \
     chmod +x object_recognition_start.py  
     
 RUN cd ~/catkin_ws/src/roboarm_pap/src && \
     chmod +x start_work.py
+
+RUN cd ~/catkin_ws && \
+    source /opt/ros/melodic/setup.bash && \
+    catkin build && \
+    echo 'source /catkin_ws/devel/setup.bash' >> /.bashrc    
 
 # Clone robot model and coty sim files
 RUN cd /opt/ros/melodic/share/simulations/ && \
