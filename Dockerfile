@@ -23,9 +23,9 @@ RUN cd /opt/ros/melodic/share/ && \
 
 #RUN cd /opt/ros/melodic/share/my_workspace/scr
 
-COPY ./robotic_arm_moveit_config ~/catkin_ws/src/
-COPY ./object_recognition ~/catkin_ws/src/
-COPY ./roboarm_pap ~/catkin_ws/src/
+COPY ./robotic_arm_moveit_config /catkin_ws/src/
+COPY ./object_recognition /catkin_ws/src/
+COPY ./roboarm_pap /catkin_ws/src/
 
 RUN cd ~/catkin_ws/src && \
     source /opt/ros/melodic/setup.bash && \
