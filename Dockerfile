@@ -42,7 +42,7 @@ COPY ./roboarm_pap /catkin_ws/src/roboarm_pap
  RUN cd ~/catkin_ws && \
     source /opt/ros/melodic/setup.bash && \
     catkin_make && \
-    echo 'source /catkin_ws/devel/setup.bash' >> /.bashrc"
+    echo 'source /catkin_ws/devel/setup.bash' >> /.bashrc
 
 # Clone robot model and coty sim files
 RUN cd /opt/ros/melodic/share/simulations/ && \
