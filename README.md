@@ -41,6 +41,9 @@ And come in the container
 
 To start simulation with recognition of the objects on the table run next command in container:
 
+    roslaunch object_recognition main.launch object
+    
+
 Default objects on the table are randomly placed void coke cans. To change objects to the balls use the argument  "**ball**".
 
     roslaunch object_recognition main.launch object := ball
