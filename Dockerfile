@@ -36,12 +36,9 @@ COPY ./robotic_arm_moveit_config /catkin_ws/src/robotic_arm_moveit_config
 COPY ./object_recognition /catkin_ws/src/object_recognition
 COPY ./roboarm_pap /catkin_ws/src/roboarm_pap
 
-#RUN cd ~/catkin_ws/src && \
- #   source /opt/ros/melodic/setup.bash && \
- #   catkin build 
- RUN cd ~/catkin_ws && \
+RUN cd ~/catkin_ws/src && \
     source /opt/ros/melodic/setup.bash && \
-    catkin_make && \
+    catkin build && \
     echo 'source /catkin_ws/devel/setup.bash' >> /.bashrc
 
 # Clone robot model and coty sim files
@@ -59,7 +56,7 @@ RUN apt-get install  -y ros-melodic-gazebo-ros-pkgs ros-melodic-gazebo-ros-contr
 RUN apt-get install -y python-scipy 
 RUN apt-get install -y libcanberra-gtk3-module
 
-RUN export ROS_PACKAGE_PATH=~/catkin_ws/src:$ROS_PACKAGE_PATH
+#RUN export ROS_PACKAGE_PATH=~/catkin_ws/src:$ROS_PACKAGE_PATH
 
 # Setup entrypoint
 #COPY ./entrypoint.sh /
