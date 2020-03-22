@@ -27,7 +27,7 @@ RUN cd /opt/ros/melodic/share/ && \
     mkdir robotic_arm 
 
 RUN cd ~/catkin_ws/src && \
-    mkdir robotic_arm_moveit_config&& \
+    mkdir robotic_arm_moveit_config && \
     mkdir object_recognition && \
     mkdir roboarm_pap
 
@@ -36,11 +36,11 @@ COPY ./robotic_arm_moveit_config /catkin_ws/src/robotic_arm_moveit_config
 COPY ./object_recognition /catkin_ws/src/object_recognition
 COPY ./roboarm_pap /catkin_ws/src/roboarm_pap
 
-RUN cd ~/catkin_ws/src/object_recognition/src && \
-    chmod +x object_recognition_start.py  
+RUN cd ~/catkin_ws/src/object_recognition/ && \
+    chmod +x /src/object_recognition_start.py  
     
-RUN cd ~/catkin_ws/src/roboarm_pap/src && \
-    chmod +x start_work.py
+RUN cd ~/catkin_ws/src/roboarm_pap/ && \
+    chmod +x /src/start_work.py
 
 RUN cd ~/catkin_ws && \
     source /opt/ros/melodic/setup.bash && \
