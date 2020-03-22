@@ -16,7 +16,8 @@ RUN echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc
 RUN mkdir -p ~/catkin_ws/src  && \
     cd ~/catkin_ws/  && \
     source /opt/ros/melodic/setup.bash  && \
-    catkin init  
+    #catkin init
+    catkin_init_workspace
 
 # Create project foulders
 RUN cd /opt/ros/melodic/share/ && \
@@ -35,9 +36,13 @@ COPY ./robotic_arm_moveit_config /catkin_ws/src/robotic_arm_moveit_config
 COPY ./object_recognition /catkin_ws/src/object_recognition
 COPY ./roboarm_pap /catkin_ws/src/roboarm_pap
 
-RUN cd ~/catkin_ws/src && \
+#RUN cd ~/catkin_ws/src && \
+ #   source /opt/ros/melodic/setup.bash && \
+ #   catkin build 
+ RUN cd ~/catkin_ws && \
     source /opt/ros/melodic/setup.bash && \
-    catkin build 
+    catkin_make && \
+    echo 'source /catkin_ws/devel/setup.bash' >> /.bashrc"
 
 # Clone robot model and coty sim files
 RUN cd /opt/ros/melodic/share/simulations/ && \
