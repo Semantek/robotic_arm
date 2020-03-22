@@ -38,8 +38,8 @@ RUN cd ~/catkin_ws/src && \
 RUN cd /opt/ros/melodic/share/simulations/ && \
     git clone https://github.com/ros-industrial/universal_robot.git
     
-COPY robotic_arm /opt/ros/melodic/share/simulations/
-COPY robotic_arm_gazebo /opt/ros/melodic/share/simulations/
+COPY robotic_arm /opt/ros/melodic/share/simulations
+COPY robotic_arm_gazebo /opt/ros/melodic/share/simulations
 
 # Install libraries to use Gazebo camera in ROS 
 RUN apt-get install  -y ros-melodic-ros-control ros-melodic-ros-controllers
