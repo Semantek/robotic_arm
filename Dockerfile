@@ -40,6 +40,12 @@ RUN cd ~/catkin_ws && \
     source /opt/ros/melodic/setup.bash && \
     catkin build && \
     echo 'source /catkin_ws/devel/setup.bash' >> /.bashrc
+    
+RUN cd ~/catkin_ws/src/object_recognition/src && \
+    chmod +x object_recognition_start.py  
+    
+RUN cd ~/catkin_ws/src/roboarm_pap/src && \
+    chmod +x start_work.py
 
 # Clone robot model and coty sim files
 RUN cd /opt/ros/melodic/share/simulations/ && \
