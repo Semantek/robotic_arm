@@ -11,6 +11,7 @@ from std_msgs.msg import String
 from sensor_msgs.msg import Image
 from sensor_msgs.msg import PointCloud2, PointField
 from object_recognition.msg import RecognizedObjects
+from std_msgs.msg import String
 from cv_bridge import CvBridge, CvBridgeError
 
 PREFIX = '_'
@@ -36,6 +37,7 @@ def get_points(data_array, remove_other=True, dtype=np.float):
 	points[...,2] = data_array['z']
 
 	return points
+
 
 def extract_dtype_list(msg):
 
@@ -63,6 +65,31 @@ def find_XYZ_datatype(msg):
 			dtype = feld_dict[f.datatype]
 	return dtype
 
+
+
+def coordinate_transformation (camera_pos, camera_points_XYZ):
+	roll = camera_pos[3]
+	pitch = camera_pos[4]
+	yaw = camera_pos[5]
+	camera_xyz = [camera_pos[0],camera_pos[1],camera_pos[2]]
+	out_points = []
+	#Set transform matrix
+	Mr = [[1.,0.,0.],
+		[0.,np.cos(roll), -np.sin(roll)],
+		[0.,np.sin(roll), np.cos(roll)]]
+	Mp = [[np.cos(pitch), 0., np.sin(pitch)],
+		[0.,1.,0.],        
+		[np.sin(pitch),0., np.cos(pitch)]]
+	My = [[np.cos(yaw), -np.sin(yaw),0.],
+		[np.sin(yaw), np.cos(yaw), 0.],
+		[0.,0.,1.]]
+	M = np.dot(Mr,np.dot(Mp,My))
+	#Coordonate of the Point in our world: x = -y_cam, y = z_cam, z = x_cam
+	for i in range (len(camera_points_XYZ)):
+		vec = [camera_points_XYZ[i][2], -camera_points_XYZ[i][0], camera_points_XYZ[i][1]]
+		out_points.append(camera_xyz + np.dot(M,vec))
+	return out_points
+
 # Define main Class
 class main_loop:
 
@@ -77,7 +104,8 @@ class main_loop:
 		self.bridge = CvBridge()
 		self.image_sub = rospy.Subscriber("/camera/depth/image_raw",Image,self.callback_RGB, queue_size = 10)
 		# Publisher of object coordinates
-		self.image_pub = rospy.Publisher("recognized_objects", RecognizedObjects,queue_size=10)
+		self.objects_pub = rospy.Publisher("recognized_objects", RecognizedObjects,queue_size=10)
+		self.string_pub = rospy.Publisher("my_string", String,queue_size=10)
 
 	def callback_RGB(self,data):  # Callback function RGB data
 		# Read the frame and convert it using bridge
@@ -140,10 +168,19 @@ class main_loop:
 				objects_coor.append(self.points[index])
 		cv2.imshow("Camera image", img1)
 		cv2.waitKey(5)
+		#Set position of the depth camera TODO auto (-0.15 -- substract camera hight)
+		camera_position = [1.33, 0. , 1.2-0.15, 0. , 0., np.pi ]
+		#Transform points 3D coordinate
+		objects_coor = coordinate_transformation (camera_position, objects_coor)
+		#Create custom message 
 		pub_msg = RecognizedObjects()
 		pub_msg.number_of_objects = len(objects_coor)
 		pub_msg.points_data = objects_coor
-		self.image_pub.publish(pub_msg)
+		#Print coordinate
+		for c in objects_coor:
+			print (c)
+		self.objects_pub.publish(pub_msg)
+		#self.string_pub.publish('Hallo')
 
 
 
