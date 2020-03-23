@@ -10,7 +10,6 @@ class main_loop:
 	def __init__(self):		
 		#Start Commander
 		moveit_commander.roscpp_initialize(sys.argv)
-		rospy.init_node('move_group_python_interfice_tutorial',anonymous=True)
 		self.robot = moveit_commander.RobotCommander()
 		self.object_pos_sub = rospy.Subscriber("recognized_objects",RecognizedObjects,self.callback, queue_size = 10)
 
@@ -20,7 +19,6 @@ class main_loop:
 			y_pos = data.points_data[0][1]
 			z_pos = data.points_data[0][2]
 			group_names = self.robot.get_group_names()
-			#print "============ Available Planning Groups:", robot.get_group_names()
 			
 			#Go to the start position
 			arm_group = moveit_commander.MoveGroupCommander("arm")
