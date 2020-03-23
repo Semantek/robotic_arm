@@ -32,9 +32,9 @@ RUN cd ~/catkin_ws/src && \
     mkdir roboarm_pap
 
 #RUN cd /opt/ros/melodic/share/my_workspace/scr
-COPY ./robotic_arm_moveit_config /catkin_ws/src/robotic_arm_moveit_config
-COPY ./object_recognition /catkin_ws/src/object_recognition
-COPY ./roboarm_pap /catkin_ws/src/roboarm_pap
+COPY ./robotic_arm_moveit_config/ /catkin_ws/src/robotic_arm_moveit_config/
+COPY ./object_recognition/ /catkin_ws/src/object_recognition/
+COPY ./roboarm_pap/ /catkin_ws/src/roboarm_pap/
 
 RUN cd ~/catkin_ws/src/object_recognition/ && \
     chmod +x /src/object_recognition_start.py  
