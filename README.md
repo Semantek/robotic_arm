@@ -57,7 +57,7 @@ If you don't need a camera view window, use the argument  "**no_view**".
 
 Camera in the simulation have "*in_static*" property, so you can move it in place as you like. 
 
-The process of object recognition published number and places in the "**recognized_object_array**" topic.
+The process of object recognition published number and places in the "**recognized_objects**" topic.
 
 ## Start pick and place
 
