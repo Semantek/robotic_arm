@@ -39,8 +39,8 @@ COPY ./roboarm_pap/ /catkin_ws/src/roboarm_pap/
 RUN cd ~/catkin_ws/src/object_recognition/ && \
     chmod +x /src/object_recognition_start.py  
     
-RUN cd ~/catkin_ws/src/roboarm_pap/ && \
-    chmod +x /src/start_work.py
+RUN cd ~/catkin_ws/src/roboarm_pap/src/ && \
+    chmod +x start_work.py
 
 RUN cd ~/catkin_ws && \
     source /opt/ros/melodic/setup.bash && \
