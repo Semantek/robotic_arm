@@ -7,12 +7,12 @@ import sys
 import rospy
 import cv2
 import numpy as np
-from std_msgs.msg import String
 from sensor_msgs.msg import Image
 from sensor_msgs.msg import PointCloud2, PointField
 from object_recognition.msg import RecognizedObjects
-from std_msgs.msg import String
+from std_msgs.msg import String, Header
 from cv_bridge import CvBridge, CvBridgeError
+from geometry_msgs.msg import PoseArray, Pose, Point, Quaternion
 
 PREFIX = '_'
 
@@ -40,7 +40,6 @@ def get_points(data_array, remove_other=True, dtype=np.float):
 
 
 def extract_dtype_list(msg):
-
 	offset = 0
 	new_dtype_list = []
 	for f in msg.fields:
@@ -90,6 +89,9 @@ def coordinate_transformation (camera_pos, camera_points_XYZ):
 		out_points.append(camera_xyz + np.dot(M,vec))
 	return out_points
 
+def convert_to_pose(point_XYZ):
+	return Pose(position=Point(x=point_XYZ[0],y=point_XYZ[1],z=point_XYZ[2]), orientation=Quaternion(x=0., y=0., z=0., w=0.))
+
 # Define main Class
 class main_loop:
 
@@ -103,9 +105,8 @@ class main_loop:
 		#Subscriber to the camera flow
 		self.bridge = CvBridge()
 		self.image_sub = rospy.Subscriber("/camera/depth/image_raw",Image,self.callback_RGB, queue_size = 10)
-		# Publisher of object coordinates
-		self.objects_pub = rospy.Publisher("recognized_objects", RecognizedObjects,queue_size=10)
-		self.string_pub = rospy.Publisher("my_string", String,queue_size=10)
+		# Coordinates of object publisher  
+		self.objects_pub = rospy.Publisher("recognized_objects", PoseArray, queue_size=10)
 
 	def callback_RGB(self,data):  # Callback function RGB data
 		# Read the frame and convert it using bridge
@@ -120,8 +121,6 @@ class main_loop:
 		# Binarization
 		ret,cv_image_temp = cv2.threshold(cv_image_temp, 20, 255, cv2.THRESH_BINARY_INV|cv2.THRESH_OTSU)
 		#Contours finding
-
-		
 		self.detected_contours = cv2.findContours(cv_image_temp.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[1]
 
     		#Count up coordinates
@@ -172,16 +171,15 @@ class main_loop:
 		camera_position = [1.33, 0. , 1.2-0.15, 0. , 0., np.pi ]
 		#Transform points 3D coordinate
 		objects_coor = coordinate_transformation (camera_position, objects_coor)
-		#Create custom message 
-		pub_msg = RecognizedObjects()
-		pub_msg.number_of_objects = len(objects_coor)
-		pub_msg.points_data = objects_coor
+		#Create message
+		points_to_poses = []
+		for p in objects_coor:
+			points_to_poses.append(convert_to_pose(p))
+		pub_msg = PoseArray(header=Header(stamp=rospy.Time.now(), frame_id="map"), poses=points_to_poses) 
 		#Print coordinate
 		for c in objects_coor:
 			print (c)
 		self.objects_pub.publish(pub_msg)
-		#self.string_pub.publish('Hallo')
-
 
 
 	def callback_depth(self,msg):
