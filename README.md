@@ -50,20 +50,15 @@ Default objects on the table are randomly placed void coke cans. To change objec
 
 
 
-If you don't need a camera view window, use the argument  "**no_view**".
-
-    roslaunch object_recognition main.launch no_view:=true
-
-
 Camera in the simulation have "*in_static*" property, so you can move it in place as you like. 
 
-The process of object recognition published number and places in the "**recognized_objects**" topic.
+The process of object recognition published places of objects in the "**recognized_objects**" topic.
 
 ## Start pick and place
 
 To start pick and place run next command
 
-    roslaunch roboarn_pap pap.launch
+    roslaunch roboarm_pap pap.launch
 
 Robotic arm mast starts moving, grasping objects on the table and throw them to the bin one-by-one. Between loops arm will be stand in a neutral position.
 If all will be OK, process shut down with "**No objects**" message.
