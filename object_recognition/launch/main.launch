@@ -8,7 +8,7 @@
 
   <node   name="object_recognition_start"
         pkg="object_recognition"
-        type="object_rec_start.py"
+        type="object_recognition_start.py"
         args=""
         output="screen"/>
 
