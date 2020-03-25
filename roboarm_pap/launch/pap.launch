@@ -3,7 +3,7 @@
   <include file="$(find robotic_arm_moveit_config)/launch/robotic_arm_planning_execution.launch">
   </include>
 
-  <node   name="object_recognition_start"
+  <node   name="pap_start"
         pkg="roboarm_pap"
         type="start_work.py"
         args=""
