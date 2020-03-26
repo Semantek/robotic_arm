@@ -95,11 +95,11 @@ def convert_to_pose(point_XYZ):
 # Define main Class
 class main_loop:
 
-	def __init__(self):
+	def __init__(self, no_view):
 			
 		self.detected_contours = []
 		self.points = []
-
+		self.no_view = no_view
 		#Subscriber to the camera depth
 		self.image_sub_depth = rospy.Subscriber("/camera/depth/points",PointCloud2,self.callback_depth, queue_size = 10)
 		#Subscriber to the camera flow
@@ -121,6 +121,8 @@ class main_loop:
 		# Binarization
 		ret,cv_image_temp = cv2.threshold(cv_image_temp, 20, 255, cv2.THRESH_BINARY_INV|cv2.THRESH_OTSU)
 		#Contours finding
+
+		
 		self.detected_contours = cv2.findContours(cv_image_temp.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[1]
 
     		#Count up coordinates
@@ -165,8 +167,9 @@ class main_loop:
 				index = cY*width + cX
 				cv2.drawContours(img1, [c], -1, (0,255,0), 3)
 				objects_coor.append(self.points[index])
-		cv2.imshow("Camera image", img1)
-		cv2.waitKey(5)
+		if not self.no_view:		
+			cv2.imshow("Camera image", img1)
+			cv2.waitKey(5)
 		#Set position of the depth camera TODO auto (-0.15 -- substract camera hight)
 		camera_position = [1.33, 0. , 1.2-0.15, 0. , 0., np.pi ]
 		#Transform points 3D coordinate
@@ -198,8 +201,10 @@ class main_loop:
 #--------------- MAIN LOOP
 def main(args):
 	#--- Create the object
-	print('Main')
-	loop = main_loop()
+	no_view = False
+	if args[1] == 'true':
+		no_view = True
+	loop = main_loop(no_view)
 
 	#--- Initialize the ROS node
 	rospy.init_node('object_rec', anonymous=True)
