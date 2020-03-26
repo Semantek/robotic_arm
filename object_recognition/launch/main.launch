@@ -9,7 +9,7 @@
   <node   name="object_recognition_start"
         pkg="object_recognition"
         type="object_recognition_start.py"
-        args=""
+        args="$(arg no_view)"
         output="screen"/>
 
 </launch>
