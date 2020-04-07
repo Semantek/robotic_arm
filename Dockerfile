@@ -1,5 +1,4 @@
 # ROS melodic
-
 FROM osrf/ros:melodic-desktop-full-bionic
 
 # Using bash instead of sh to be able to source
@@ -10,10 +9,10 @@ RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 # Update ROS packages Install Catkin and Moveit!
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y ros-melodic-catkin python-catkin-tools ros-melodic-moveit wget
-    
+
 RUN echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc
-RUN mkdir -p ~/catkin_ws/src  && \
-    cd ~/catkin_ws/  && \
+RUN mkdir -p ./catkin_ws/src  && \
+    cd ./catkin_ws/  && \
     source /opt/ros/melodic/setup.bash  && \
     catkin init
 
@@ -24,7 +23,7 @@ RUN cd /opt/ros/melodic/share/ && \
     mkdir robotic_arm_gazebo  && \
     mkdir robotic_arm 
 
-RUN cd ~/catkin_ws/src && \
+RUN cd ./catkin_ws/src && \
     mkdir robotic_arm_moveit_config && \
     mkdir object_recognition && \
     mkdir roboarm_pap
@@ -36,7 +35,7 @@ COPY ./roboarm_pap/ /catkin_ws/src/roboarm_pap/
 RUN chmod +x /catkin_ws/src/object_recognition/src/object_recognition_start.py     
 RUN chmod +x /catkin_ws/src/roboarm_pap/src/start_work.py
 
-RUN cd ~/catkin_ws && \
+RUN cd ./catkin_ws && \
     source /opt/ros/melodic/setup.bash && \
     catkin build && \
     echo 'source /catkin_ws/devel/setup.bash' >> /.bashrc    
@@ -44,7 +43,7 @@ RUN cd ~/catkin_ws && \
 # Clone robot model and coty sim files
 RUN cd /opt/ros/melodic/share/simulations/ && \
     git clone https://github.com/ros-industrial/universal_robot.git
-  
+
 COPY ./robotic_arm /opt/ros/melodic/share/simulations/robotic_arm
 COPY ./robotic_arm_gazebo /opt/ros/melodic/share/simulations/robotic_arm_gazebo
 
