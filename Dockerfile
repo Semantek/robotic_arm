@@ -38,6 +38,7 @@ RUN chmod +x /catkin_ws/src/roboarm_pap/src/start_work.py
 RUN cd ./catkin_ws && \
     source /opt/ros/melodic/setup.bash && \
     catkin build && \
+    source /catkin_ws/devel/setup.bash && \
     echo 'source /catkin_ws/devel/setup.bash' >> /.bashrc    
 
 # Clone robot model and coty sim files
