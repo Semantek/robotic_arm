@@ -106,10 +106,10 @@
         </link>
       </model>
       <model name='robot_pilar'>
-        <pose frame=''>0 -1 0.5 0 -0 0</pose>
+        <pose frame=''>0 -0.7 0.5 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>0 -1 0.5 0 -0 0</pose>
+          <pose frame=''>0 -0.7 0.5 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
@@ -126,16 +126,16 @@
         </link>
       </model>
       <model name='trash_bin'>
-        <pose frame=''>0.889762 -0.78558 0 0 -0 0</pose>
+        <pose frame=''>0.9 0.0 0 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link_0'>
-          <pose frame=''>0.889762 -0.78558 0 0 -0 0</pose>
+          <pose frame=''>0.9 -0.0 0 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
         <link name='link_1'>
-          <pose frame=''>0.889762 -0.78558 0 0 -0 0</pose>
+          <pose frame=''>0.9 -0.0 0 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
@@ -170,7 +170,7 @@
     </light>
     <model name='robot_pilar'>
       <static>1</static>
-      <pose frame=''>0 -1 0.5 0 -0 0</pose>
+      <pose frame=''>0 -0.7 0.5 0 -0 0</pose>
       <link name='link'>
         <inertial>
           <mass>1</mass>
