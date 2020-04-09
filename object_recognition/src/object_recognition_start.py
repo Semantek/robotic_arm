@@ -11,7 +11,6 @@ from sensor_msgs.msg import Image
 from sensor_msgs.msg import PointCloud2, PointField
 from object_recognition.msg import RecognizedObjects
 from std_msgs.msg import String, Header
-from cv_bridge import CvBridge, CvBridgeError
 from geometry_msgs.msg import PoseArray, Pose, Point, Quaternion
 
 PREFIX = '_'
@@ -37,6 +36,24 @@ def get_points(data_array, remove_other=True, dtype=np.float):
 	points[...,2] = data_array['z']
 
 	return points
+
+def grab_rgb_image(imput_arr, hight, width):
+	#Copy RGB part from a camera array
+	rgb_arr = imput_arr['rgb'].copy()
+	#Set type
+	rgb_arr.dtype = np.uint32
+	#Convert to 8bit colors from format 32bit: 00RRGGBB
+	red = np.asarray((rgb_arr >> 16) & 255, dtype=np.uint8)
+	green = np.asarray((rgb_arr >> 8) & 255, dtype=np.uint8)
+	blue = np.asarray(rgb_arr & 255, dtype=np.uint8)
+	#Reshape 1D arrays to hightXwidth matrix
+	np.reshape(red, (hight, width))
+	np.reshape(green, (hight, width))
+	np.reshape(blue, (hight, width))
+	#Merge tree matrixes in one
+	image = np.dstack((red,green,blue))
+
+	return image
 
 
 def extract_dtype_list(msg):
@@ -65,7 +82,7 @@ def find_XYZ_datatype(msg):
 	return dtype
 
 
-
+#Transformation of camera pixel coordinates to global world coordinates
 def coordinate_transformation (camera_pos, camera_points_XYZ):
 	roll = camera_pos[3]
 	pitch = camera_pos[4]
@@ -83,9 +100,9 @@ def coordinate_transformation (camera_pos, camera_points_XYZ):
 		[np.sin(yaw), np.cos(yaw), 0.],
 		[0.,0.,1.]]
 	M = np.dot(Mr,np.dot(Mp,My))
-	#Coordonate of the Point in our world: x = -y_cam, y = z_cam, z = x_cam
+	#Coordonate of the Point in our world: x = z_cam, y = -x_cam, z = -y_cam
 	for i in range (len(camera_points_XYZ)):
-		vec = [camera_points_XYZ[i][2], -camera_points_XYZ[i][0], camera_points_XYZ[i][1]]
+		vec = [camera_points_XYZ[i][2], -camera_points_XYZ[i][0], -camera_points_XYZ[i][1]]
 		out_points.append(camera_xyz + np.dot(M,vec))
 	return out_points
 
@@ -102,18 +119,23 @@ class main_loop:
 		self.no_view = no_view
 		#Subscriber to the camera depth
 		self.image_sub_depth = rospy.Subscriber("/camera/depth/points",PointCloud2,self.callback_depth, queue_size = 10)
-		#Subscriber to the camera flow
-		self.bridge = CvBridge()
-		self.image_sub = rospy.Subscriber("/camera/depth/image_raw",Image,self.callback_RGB, queue_size = 10)
 		# Coordinates of object publisher  
 		self.objects_pub = rospy.Publisher("recognized_objects", PoseArray, queue_size=10)
 
-	def callback_RGB(self,data):  # Callback function RGB data
-		# Read the frame and convert it using bridge
-		try:
-			cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
-		except CvBridgeError as e:
-			print(e)
+
+	def callback_depth(self,msg):
+		# construct a numpy record type equivalent to the point type of this cloud
+		data_type_list = extract_dtype_list(msg)
+	
+		# parse the cloud into an array
+		cloud_arr = np.fromstring(msg.data, data_type_list)
+		cloud_arr = cloud_arr[[fname for fname, _type in data_type_list if not (fname[:len(PREFIX)] == PREFIX)]]
+		dtype = find_XYZ_datatype(msg)
+		cloud_arr = np.reshape(cloud_arr, (msg.height, msg.width))
+		cv_image = grab_rgb_image (cloud_arr, 640, 480)
+		#vis = cv.CreateMat(480, 640, cv.CV_8UC3)
+		#cv2.imshow("Camera image", cv_image)
+		self.points = get_points(cloud_arr, dtype=dtype)
 
 		# Color image to grayscale	
 		cv_image_temp = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
@@ -158,20 +180,75 @@ class main_loop:
 			area = cv2.contourArea(c)
 			flag = False
 			for i in range (len(c)):
+			#Filtred countors, that partial out of camera view
 				if (c[i][0][0] < border) or (c[i][0][0] > width-border) or (c[i][0][1] < border) or (c[i][0][1] > hight-border):
 					flag = True
 			if (M["m00"] != 0) and (area > 100) and (area < 50000) and not flag:
 				cX = int(M["m10"] / M["m00"])
 				cY = int(M["m01"] / M["m00"])
-				#cv2.circle(img1, (cX, cY), 7, (255, 255, 255), -1)
-				index = cY*width + cX
+				#cv2.circle(img1, (cX, cY), 4, (255, 255, 255), -1)
+				index = cY*width + cY
 				cv2.drawContours(img1, [c], -1, (0,255,0), 3)
-				objects_coor.append(self.points[index])
+				x_mean = .0
+ 				y_mean = .0
+ 				z_mean = .0
+				for i in range (len(c)):
+					index = c[i][0][1]*width + c[i][0][0]
+
+        				x_mean += self.points[index][0]
+        				y_mean += self.points[index][1]
+        				z_mean += self.points[index][2]
+				x_mean /= len(c)
+				y_mean /= len(c)
+				z_mean /= len(c)
+				delta_z = .0
+				for i in range (len(c)):
+					index = c[i][0][1]*width + c[i][0][0]
+					d = abs(z_mean - self.points[index][2])
+					if d < 1. :
+						delta_z += d
+				delta_z /= len(c)
+				if delta_z > 0.07:
+					x1_mean = .0
+ 					y1_mean = .0
+ 					z1_mean = .0
+					x2_mean = .0
+ 					y2_mean = .0
+ 					z2_mean = .0
+					iter_1 = 0
+					iter_2 = 0
+					for i in range (len(c)):
+						index = c[i][0][1]*width + c[i][0][0]
+						if self.points[index][2] > z_mean:
+        						x1_mean += self.points[index][0]
+        						y1_mean += self.points[index][1]
+        						z1_mean += self.points[index][2]
+							iter_1 += 1
+						else:
+        						x2_mean += self.points[index][0]
+        						y2_mean += self.points[index][1]
+        						z2_mean += self.points[index][2]
+							iter_2 += 1
+					x1_mean /= iter_1
+					y1_mean /= iter_1
+					z1_mean /= iter_1
+					x2_mean /= iter_2
+					y2_mean /= iter_2
+					z2_mean /= iter_2
+					if iter_1 > 10:
+						objects_coor.append([x1_mean, y1_mean, z1_mean])
+					if iter_2 > 10:
+						objects_coor.append([x2_mean, y2_mean, z2_mean])
+				else:
+					objects_coor.append([x_mean, y_mean, z_mean])
+
+
+
 		if not self.no_view:		
 			cv2.imshow("Camera image", img1)
 			cv2.waitKey(5)
-		#Set position of the depth camera TODO auto (-0.15 -- substract camera hight)
-		camera_position = [1.33, 0. , 1.2-0.15, 0. , 0., np.pi ]
+		#Set position of the depth camera TODO auto
+		camera_position = [1.33, 0. , 1.2, 0. , 0., np.pi ]
 		#Transform points 3D coordinate
 		objects_coor = coordinate_transformation (camera_position, objects_coor)
 		#Create message
@@ -180,23 +257,10 @@ class main_loop:
 			points_to_poses.append(convert_to_pose(p))
 		pub_msg = PoseArray(header=Header(stamp=rospy.Time.now(), frame_id="map"), poses=points_to_poses) 
 		#Print coordinate
+		print ("Found ",len(objects_coor), "objects")
 		for c in objects_coor:
 			print (c)
 		self.objects_pub.publish(pub_msg)
-
-
-	def callback_depth(self,msg):
-		# construct a numpy record type equivalent to the point type of this cloud
-		data_type_list = extract_dtype_list(msg)
-	
-		# parse the cloud into an array
-		cloud_arr = np.fromstring(msg.data, data_type_list)
-		cloud_arr = cloud_arr[[fname for fname, _type in data_type_list if not (fname[:len(PREFIX)] == PREFIX)]]
-		dtype = find_XYZ_datatype(msg)
-		cloud_arr = np.reshape(cloud_arr, (msg.height, msg.width))
-		self.points = get_points(cloud_arr, dtype=dtype)
-
-
 
 #--------------- MAIN LOOP
 def main(args):
