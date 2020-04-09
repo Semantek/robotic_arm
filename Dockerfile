@@ -39,7 +39,7 @@ RUN cd ./catkin_ws && \
     source /opt/ros/melodic/setup.bash && \
     catkin build && \
     source /catkin_ws/devel/setup.bash && \
-    echo 'source /catkin_ws/devel/setup.bash' >> /.bashrc    
+    echo 'source /catkin_ws/devel/setup.bash' >> ~/.bashrc    
 
 # Clone robot model and coty sim files
 RUN cd /opt/ros/melodic/share/simulations/ && \
