@@ -42,7 +42,7 @@ class main_loop:
 			arm_group.set_pose_target(pose_target)
 			plan3 = arm_group.go()
 
-			pose_target.position.z = 1.35
+			pose_target.position.z = 1.355
 			arm_group.set_pose_target(pose_target)
 			plan3 = arm_group.go()
 
@@ -57,7 +57,7 @@ class main_loop:
 			arm_group.set_named_target("trash")
 			plan1 = arm_group.go()
 
-			hand_group.set_named_target("close")
+			hand_group.set_named_target("open")
 			plan2 = hand_group.go()
 
 		else:
